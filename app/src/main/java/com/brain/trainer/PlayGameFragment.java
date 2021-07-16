@@ -1,7 +1,9 @@
 package com.brain.trainer;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.os.CountDownTimer;
@@ -17,8 +19,9 @@ import java.util.Random;
 public class PlayGameFragment extends Fragment {
     FragmentPlayGameBinding playGameBinding;
     private int right=0,total=0,corrOption;
+    @SuppressLint("SetTextI18n")
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         playGameBinding=FragmentPlayGameBinding.inflate(inflater,container,false);
@@ -26,10 +29,15 @@ public class PlayGameFragment extends Fragment {
 
         corrOption=FillOption();
         StartTimer();
+        playGameBinding.marks.setText("0/0");
+
         playGameBinding.start.setOnClickListener(view1 -> {
             playGameBinding.start.setVisibility(View.GONE);
             StartTimer();
             corrOption=FillOption();
+            total=1;
+            right=0;
+            playGameBinding.marks.setText("0/0");
         });
         playGameBinding.num1.setOnClickListener(view1 -> {
             if (playGameBinding.start.getVisibility()==View.VISIBLE)
@@ -77,8 +85,12 @@ public class PlayGameFragment extends Fragment {
     private void StartTimer(){
         new CountDownTimer(30000, 1000) {
 
+            @SuppressLint("SetTextI18n")
             public void onTick(long millisUntilFinished) {
-                playGameBinding.timer.setText(""+millisUntilFinished / 1000);
+                if (millisUntilFinished<=10000)
+                    playGameBinding.timer.setText("00:0"+millisUntilFinished / 1000);
+                else
+                playGameBinding.timer.setText("00:"+millisUntilFinished / 1000);
                 //here you can have your logic to set text to edittext
             }
 
@@ -88,6 +100,7 @@ public class PlayGameFragment extends Fragment {
 
         }.start();
     }
+    @SuppressLint("SetTextI18n")
     private int  GenerateQuesAns(){
         final int min = 20;
         final int max = 90;
@@ -97,6 +110,7 @@ public class PlayGameFragment extends Fragment {
         return num1+num2;
 
     }
+    @SuppressLint("SetTextI18n")
     private int  FillOption(){
         final int min = 20;
         final int max = 110;
@@ -109,7 +123,7 @@ public class PlayGameFragment extends Fragment {
         playGameBinding.num3.setText(num3+"");
         playGameBinding.num4.setText(num4+"");
 
-        int ansIdx = new Random().nextInt((3) + 1) + 1;
+        int ansIdx = new Random().nextInt(4) + 1;
         Log.v("tag","Andid=="+ansIdx);
         int ans=GenerateQuesAns();
         if (ansIdx==1)
@@ -118,20 +132,10 @@ public class PlayGameFragment extends Fragment {
             playGameBinding.num2.setText(""+ans);
         else if (ansIdx==3)
             playGameBinding.num3.setText(""+ans);
-        else if (ansIdx==4)
+        else
             playGameBinding.num4.setText(""+ans);
 
-        switch (ansIdx){
-            case 1:;
-            break;
-            case 2:
-            break;
 
-            case 3:playGameBinding.num3.setText(""+ans);
-            break;
-            case 4:playGameBinding.num4.setText(""+ans);
-            break;
-        }
         total++;
         return ansIdx;
 
